@@ -1,37 +1,26 @@
 import PdfPrinter from "pdfmake";
-import fs from 'fs';
+import doc from "../pdf/doc";
+import { Roboto } from "../pdf/fonts";
+import { UserInput } from "../models/user.model";
 
-const fonts = {
-    Roboto: {
-        normal: 'jsnode/fonts/DejaVuSans.ttf',
-        bold: 'jsnode/fonts/DejaVuSans-Bold.ttf',
-        italics: 'jsnode/fonts/DejaVuSans.ttf',
-        bolditalics: 'jsnode/fonts/DejaVuSans.ttf'
+export const generatePdf = async (user: UserInput): Promise<Buffer | Boolean> => {
+
+    if (user.image === null) {
+        return false;
     }
-}
+    
+    const printer = new PdfPrinter({ Roboto });
+    const docDefinition = doc(user);
+    const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
-export const generatePdf = (firstName: string, lastName: string, image: string) => {
-    const printer = new PdfPrinter(fonts);
-
-    const docDefinition = {
-        content: [
-            {
-                layout: 'noBorders',
-                fontSize: 11,
-                table: {
-                    widths: ['100%'],
-                    body: [
-                        [{ text: 'First name:', margin: [0, 10, 0, 0] }],
-                        [firstName],
-                        ['Last name:'],
-                        [lastName],
-                    ]
-                }
-            },
-        ]
-    }
-    const options = {};
-    const pdfDoc = printer.createPdfKitDocument(docDefinition, options);
-    pdfDoc.pipe(fs.createWriteStream(`${firstName}_${lastName}_${Date.now()}.pdf`));
-    pdfDoc.end();
+    return new Promise((resolve, reject) => {
+        try {
+            const chunks: Uint8Array[] = [];
+            pdfDoc.on('data', (chunk) => chunks.push(chunk));
+            pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+            pdfDoc.end();
+        } catch (err) {
+            reject(err);
+        }
+    });
 }

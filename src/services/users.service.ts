@@ -1,3 +1,4 @@
+import { generatePdf } from "../helpers/pdfFilesGenerator";
 import User, { UserInput, UserOutput } from "../models/user.model"
 
 export const findAllUsers = async (): Promise<UserOutput[] | string> => {
@@ -37,4 +38,19 @@ export const deleteUserById = async (id: number): Promise<string> => {
     return deletedUser
         ? `User with id = ${id} Deleted Successfully`
         : `User with id = ${id} Not Found`;
+}
+
+export const createPdf = async (email: string): Promise<Buffer | string | Boolean> => {
+    const user = await User.findOne({ where: { email: email } });
+    if (!user) {
+        return `User with email = ${email} Not Found`;
+    }
+    const pdf = await generatePdf(user);
+    if (!pdf) {
+        await User.update(
+            { pdf: pdf },
+            { where: { email: email } }
+        );
+    }
+    return pdf;
 }

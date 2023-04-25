@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import * as usersService from '../services/users.service';
-import { UserInput, UserOutput } from '../models/user.model';
+import { UserInput } from '../models/user.model';
 
 export const findAllUsers: RequestHandler = async (req, res): Promise<void> => {
     const users = await usersService.findAllUsers();
@@ -42,4 +42,13 @@ export const deleteUserById: RequestHandler = async (req, res): Promise<void> =>
     const userId: number = parseInt(req.params.id);
     const result = await usersService.deleteUserById(userId);
     res.send(result);
+}
+
+export const createPdf: RequestHandler = async (req, res): Promise<void> => {
+    const email: string = req.body.email;
+    console.log('EMAIL: ' + email);
+    const result = await usersService.createPdf(email);
+    // res.send(result);
+    res.setHeader('Content-disposition', 'attachment; filename=report.pdf');
+    res.type('pdf').send(result);
 }

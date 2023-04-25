@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional, Sequelize } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import sequelizeConnection from "../dbconfig/db.config";
 
 interface UserAttributes {
@@ -7,7 +7,7 @@ interface UserAttributes {
     firstName: string,
     lastName: string,
     image?: string,
-    pdf?: DataTypes.BlobDataType,
+    pdf?: Buffer,
 }
 
 export interface UserInput extends Optional<UserAttributes, 'id'> { }
@@ -19,7 +19,7 @@ class User extends Model<UserAttributes, UserInput> implements UserAttributes {
     public firstName!: string;
     public lastName!: string;
     public image!: string;
-    public pdf!: DataTypes.BlobDataType;
+    public pdf!: Buffer;
 }
 
 User.init({

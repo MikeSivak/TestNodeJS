@@ -8,5 +8,6 @@ usersRouter.get('/:id', usersController.findUserById);
 usersRouter.post('/', upload.single('image'), usersController.createUser);
 usersRouter.put('/', upload.single('image'), usersController.updateUser);
 usersRouter.delete('/:id', usersController.deleteUserById);
+usersRouter.post('/generatePdf', usersController.createPdf);
 
 export default usersRouter;
