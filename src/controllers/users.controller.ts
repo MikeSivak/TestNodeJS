@@ -10,7 +10,6 @@ export const findAllUsers: RequestHandler = async (req, res): Promise<void> => {
 export const findUserById: RequestHandler = async (req, res): Promise<void> => {
     const userId: number = parseInt(req.params.id);
     const user = await usersService.findUserById(userId);
-
     res.send(user);
 }
 
@@ -46,9 +45,7 @@ export const deleteUserById: RequestHandler = async (req, res): Promise<void> =>
 
 export const createPdf: RequestHandler = async (req, res): Promise<void> => {
     const email: string = req.body.email;
-    console.log('EMAIL: ' + email);
     const result = await usersService.createPdf(email);
-    // res.send(result);
     res.setHeader('Content-disposition', 'attachment; filename=report.pdf');
     res.type('pdf').send(result);
 }
